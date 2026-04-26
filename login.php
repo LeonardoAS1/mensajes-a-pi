@@ -5,21 +5,15 @@ require "db.php";
 $usuario  = trim($_GET['usuario']  ?? '');
 $password = trim($_GET['password'] ?? '');
 
-if (!$usuario || !$password) {
-    die(json_encode(["ok" => false, "msg" => "Faltan datos"]));
-}
+if (!$usuario || !$password) die(json_encode(["ok"=>false,"msg"=>"Faltan datos"]));
 
-$stmt = $conn->prepare("SELECT password FROM usuarios WHERE usuario = ?");
+$stmt = $conn->prepare("SELECT password FROM usuarios WHERE usuario=?");
 $stmt->bind_param("s", $usuario);
 $stmt->execute();
-$result = $stmt->get_result();
+$row = $stmt->get_result()->fetch_assoc();
 
-if ($row = $result->fetch_assoc()) {
-    if (password_verify($password, $row['password'])) {
-        echo json_encode(["ok" => true]);
-    } else {
-        echo json_encode(["ok" => false, "msg" => "Contraseña incorrecta"]);
-    }
+if ($row && password_verify($password, $row['password'])) {
+    echo json_encode(["ok" => true]);
 } else {
-    echo json_encode(["ok" => false, "msg" => "Usuario no encontrado"]);
+    echo json_encode(["ok" => false, "msg" => "Credenciales incorrectas"]);
 }
