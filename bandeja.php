@@ -5,15 +5,18 @@ require "db.php";
 $para = trim($_GET['para'] ?? '');
 if (!$para) die(json_encode(["ok" => false, "msg" => "Falta para"]));
 
-// Trae el último mensaje recibido de cada remitente
 $stmt = $conn->prepare(
-    "SELECT de, mensaje AS ultimo_mensaje, MAX(fecha) AS fecha
-     FROM mensajes
-     WHERE para = ?
-     GROUP BY de
-     ORDER BY fecha DESC"
+    "SELECT m.de, m.mensaje AS ultimo_mensaje, m.fecha
+     FROM mensajes m
+     INNER JOIN (
+         SELECT de, MAX(fecha) AS max_fecha
+         FROM mensajes
+         WHERE para = ?
+         GROUP BY de
+     ) sub ON m.de = sub.de AND m.fecha = sub.max_fecha AND m.para = ?
+     ORDER BY m.fecha DESC"
 );
-$stmt->bind_param("s", $para);
+$stmt->bind_param("ss", $para, $para);
 $stmt->execute();
 $result = $stmt->get_result();
 
