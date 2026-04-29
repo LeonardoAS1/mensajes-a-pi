@@ -12,11 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $db = new mysqli(
-    getenv('DB_HOST'),
-    getenv('DB_USER'),
-    getenv('DB_PASSWORD'),
-    getenv('DB_NAME'),
-    (int)(getenv('DB_PORT') ?: 3306)
+    getenv('MYSQLHOST'),
+    getenv('MYSQLUSER'),
+    getenv('MYSQLPASSWORD'),
+    getenv('MYSQLDATABASE'),
+    (int)(getenv('MYSQLPORT') ?: 3306)
 );
 
 if ($db->connect_error) {
