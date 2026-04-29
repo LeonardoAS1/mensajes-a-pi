@@ -63,7 +63,6 @@ if ($method === 'POST' && $path === '/create_game') {
     $game = $stmt->get_result()->fetch_assoc();
     if (!$game) { http_response_code(404); echo json_encode(['error' => 'Game not found']); exit; }
     if ($game['status'] !== 'waiting') { http_response_code(400); echo json_encode(['error' => 'Game already full']); exit; }
-    $db->prepare("UPDATE games SET status = 'playing' WHERE id = ?")->bind_param('s', $id) && $db->prepare("UPDATE games SET status = 'playing' WHERE id = ?")->execute();
     $stmt2 = $db->prepare("UPDATE games SET status = 'playing' WHERE id = ?");
     $stmt2->bind_param('s', $id);
     $stmt2->execute();
